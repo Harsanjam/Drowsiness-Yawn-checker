@@ -71,12 +71,14 @@ ap.add_argument("-w", "--webcam", type=int, default=0,
                 help="index of webcam on system")
 args = vars(ap.parse_args())
 
+
+
 EYE_AR_THRESH = 0.3
 EYE_AR_CONSEC_FRAMES = 30
-YAWN_THRESH = 15
-alarm_status = False
-alarm_status2 = False
-saying = False
+YAWN_THRESH = 17
+alarm_status = True
+alarm_status2 = True
+saying = True
 COUNTER = 0
 
 print("-> Loading the predictor and detector...")
