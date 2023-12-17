@@ -120,34 +120,39 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
 # Detect faces in the grayscale frame
-    detected_faces = face_detector.detectMultiScale(gray, scaleFactor=1.1, 
-		minNeighbors=5, minSize=(30, 30),
-		flags=cv2.CASCADE_SCALE_IMAGE)
+detected_faces = face_detector.detectMultiScale(gray, scaleFactor=1.1, 
+    minNeighbors=5, minSize=(30, 30),
+    flags=cv2.CASCADE_SCALE_IMAGE)
 
-    for (x, y, w, h) in detected_faces:
-        face_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
-        facial_shape = shape_predictor(gray, face_rect)
-        facial_shape = face_utils.shape_to_np(facial_shape)
+# Loop through each detected face
+for (x, y, w, h) in detected_faces:
+    # Create a rectangle representing the face
+    face_rect = dlib.rectangle(int(x), int(y), int(x + w), int(y + h))
+    
+    # Detect facial landmarks
+    facial_shape = shape_predictor(gray, face_rect)
+    facial_shape = face_utils.shape_to_np(facial_shape)
 
- # Calculate eye aspect ratio and lip distance
-        eye = calculate_final_eye_aspect_ratio(facial_shape)
-        eye_aspect_ratio = eye[0]
-        left_eye = eye[1]
-        right_eye = eye[2]
+    # Calculate eye aspect ratio and lip distance for the current face
+    eye = calculate_final_eye_aspect_ratio(facial_shape)
+    eye_aspect_ratio = eye[0]
+    left_eye = eye[1]
+    right_eye = eye[2]
 
-        lip_distance_value = calculate_lip_distance(facial_shape)
+    lip_distance_value = calculate_lip_distance(facial_shape)
 
-# Visualize eye and lip contours
-        left_eye_hull = cv2.convexHull(left_eye)
-        right_eye_hull = cv2.convexHull(right_eye)
-        cv2.drawContours(frame, [left_eye_hull], -1, (0, 255, 0), 1)
-        cv2.drawContours(frame, [right_eye_hull], -1, (0, 255, 0), 1)
+    # Visualize eye and lip contours on the frame
+    left_eye_hull = cv2.convexHull(left_eye)
+    right_eye_hull = cv2.convexHull(right_eye)
+    cv2.drawContours(frame, [left_eye_hull], -1, (0, 255, 0), 1)
+    cv2.drawContours(frame, [right_eye_hull], -1, (0, 255, 0), 1)
 
-        lip_contour = facial_shape[48:60]
-        cv2.drawContours(frame, [lip_contour], -1, (0, 255, 0), 1)
+    lip_contour = facial_shape[48:60]  # Landmarks for lip contour
+    cv2.drawContours(frame, [lip_contour], -1, (0, 255, 0), 1)  # Draw lip contour on the frame
 
   # Check for drowsiness and yawn alerts based on thresholds
-       # Check if the calculated eye aspect ratio falls below the predefined threshold
+  # Check if the calculated eye aspect ratio falls below the predefined threshold
+
 if eye_aspect_ratio < EYE_AR_THRESHOLD:
     FRAME_COUNTER += 1  # Increment the frame counter for consecutive frames with low eye aspect ratio
 
