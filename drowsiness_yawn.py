@@ -154,7 +154,8 @@ for (x, y, w, h) in detected_faces:
   # Check if the calculated eye aspect ratio falls below the predefined threshold
 
 if eye_aspect_ratio < EYE_AR_THRESHOLD:
-    FRAME_COUNTER += 1  # Increment the frame counter for consecutive frames with low eye aspect ratio
+    # Increment the frame counter for consecutive frames with low eye aspect ratio
+    FRAME_COUNTER += 1 
 
     # Check if the frame counter meets or exceeds the threshold for drowsiness detection
     if FRAME_COUNTER >= EYE_AR_CONSEC_FRAMES:
@@ -170,11 +171,13 @@ if eye_aspect_ratio < EYE_AR_THRESHOLD:
         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
 	else:
-    		FRAME_COUNTER = 0  # Reset the frame counter if eye aspect ratio is above the threshold
-   	        alarm_active = False  # Deactivate the alarm as the condition for drowsiness is not met
+		# Reset the frame counter if eye aspect ratio is above the threshold
+    		FRAME_COUNTER = 0  
+		
+		# Deactivate the alarm as the condition for drowsiness is not met
+   	        alarm_active = False  
 
-
-        # Check if the calculated lip distance value exceeds the predefined yawn threshold
+# Check if the calculated lip distance value exceeds the predefined yawn threshold
 if lip_distance_value > YAWN_THRESHOLD:
     # Display a "Yawn Alert" message on the frame if a yawn is detected
     cv2.putText(frame, "Yawn Alert", (10, 30),
