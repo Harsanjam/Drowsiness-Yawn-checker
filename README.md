@@ -31,11 +31,16 @@ YAWN_THRESH = 15`	//change this according to the distance from the camera
 ## Authors
 
 **Harsanjam Saini** 
+**Ahmed Ramadan** 
+**Syed Rameel Arshad** 
 
 
 ## Acknowledgments
 
 * https://www.pyimagesearch.com/
+
+* https://www.sciencedirect.com/science/article/pii/S2468227623004611![image](https://github.com/Harsanjam/Drowsiness-Yawn-checker/assets/56749102/4c644932-30fd-47f8-9ef8-f5e8a7401f0c)
+
 
 
 
