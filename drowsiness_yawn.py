@@ -31,37 +31,62 @@ def sound_alarm(message):
         speaking = False
 
 def calculate_eye_aspect_ratio(eye_landmarks):
-    A = dist.euclidean(eye_landmarks[1], eye_landmarks[5])
-    B = dist.euclidean(eye_landmarks[2], eye_landmarks[4])
-    C = dist.euclidean(eye_landmarks[0], eye_landmarks[3])
+    # Calculate the Euclidean distances between specific landmarks (points) of the eye
+    # Vertical eye landmark 1 to 5
+    A = dist.euclidean(eye_landmarks[1], eye_landmarks[5]) 
 
-    eye_ratio = (A + B) / (2.0 * C)
+    # Vertical eye landmark 2 to 4
+    B = dist.euclidean(eye_landmarks[2], eye_landmarks[4]) 
+
+    # Horizontal eye landmark 0 to 3
+    C = dist.euclidean(eye_landmarks[0], eye_landmarks[3])  
+
+    # Compute the eye aspect ratio using the formula
+    eye_ratio = (A + B) / (2.0 * C)  # Formula for calculating eye aspect ratio
     return eye_ratio
 
 def calculate_final_eye_aspect_ratio(facial_shape):
+    # Get the start and end indices of the left and right eye landmarks in the facial shape
     left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
     right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
+    # Extract left and right eye landmarks from the facial shape
     left_eye_landmarks = facial_shape[left_eye_start:left_eye_end]
     right_eye_landmarks = facial_shape[right_eye_start:right_eye_end]
 
+    # Calculate the eye aspect ratio for the left and right eyes separately
     left_eye_ratio = calculate_eye_aspect_ratio(left_eye_landmarks)
     right_eye_ratio = calculate_eye_aspect_ratio(right_eye_landmarks)
 
+    # Compute the average eye aspect ratio of both eyes
     eye_aspect_ratio = (left_eye_ratio + right_eye_ratio) / 2.0
+
+    # Return the calculated eye aspect ratio along with left and right eye landmarks
     return (eye_aspect_ratio, left_eye_landmarks, right_eye_landmarks)
 
 def calculate_lip_distance(facial_shape):
-    top_lip = facial_shape[50:53]
-    top_lip = np.concatenate((top_lip, facial_shape[61:64]))
+    # Extract specific landmarks for the top and bottom lip from the facial shape
+    # Landmarks for the upper lip (50-52)
+    top_lip = facial_shape[50:53]  
 
-    bottom_lip = facial_shape[56:59]
-    bottom_lip = np.concatenate((bottom_lip, facial_shape[65:68]))
+    # Additional landmarks for the upper lip (61-63)
+    top_lip = np.concatenate((top_lip, facial_shape[61:64]))  
 
-    top_mean = np.mean(top_lip, axis=0)
-    bottom_mean = np.mean(bottom_lip, axis=0)
+    # Landmarks for the lower lip (56-58)
+    bottom_lip = facial_shape[56:59] 
 
-    distance = abs(top_mean[1] - bottom_mean[1])
+    # Additional landmarks for the lower lip (65-67)
+    bottom_lip = np.concatenate((bottom_lip, facial_shape[65:68]))  
+
+    # Calculate the mean (average) points for the top and bottom lips
+    # Mean point for the upper lip
+    top_mean = np.mean(top_lip, axis=0) 
+    # Mean point for the lower lip
+    bottom_mean = np.mean(bottom_lip, axis=0)  
+
+    # Calculate the vertical distance between the mean points of the top and bottom lips
+    # Absolute difference in y-coordinates
+    distance = abs(top_mean[1] - bottom_mean[1]) 
     return distance
 
 # Command-line arguments setup
@@ -122,32 +147,44 @@ while True:
         cv2.drawContours(frame, [lip_contour], -1, (0, 255, 0), 1)
 
   # Check for drowsiness and yawn alerts based on thresholds
-        if eye_aspect_ratio < EYE_AR_THRESHOLD:
-            FRAME_COUNTER += 1
+       # Check if the calculated eye aspect ratio falls below the predefined threshold
+if eye_aspect_ratio < EYE_AR_THRESHOLD:
+    FRAME_COUNTER += 1  # Increment the frame counter for consecutive frames with low eye aspect ratio
 
-            if FRAME_COUNTER >= EYE_AR_CONSEC_FRAMES:
-                if not alarm_active:
-                    alarm_active = True
-                    alarm_thread = Thread(target=sound_alarm, args=('Wake up, please!',))
-                    alarm_thread.daemon = True
-                    alarm_thread.start()
+    # Check if the frame counter meets or exceeds the threshold for drowsiness detection
+    if FRAME_COUNTER >= EYE_AR_CONSEC_FRAMES:
+        # Activate the alarm if it's not already active and start a thread to sound the alarm
+        if not alarm_active:
+            alarm_active = True
+            alarm_thread = Thread(target=sound_alarm, args=('Wake up, please!',))
+            alarm_thread.daemon = True
+            alarm_thread.start()
 
-                cv2.putText(frame, "DROWSINESS ALERT!", (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        else:
-            FRAME_COUNTER = 0
-            alarm_active = False
+        # Display a drowsiness alert on the frame
+        cv2.putText(frame, "DROWSINESS ALERT!", (10, 30),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-        if lip_distance_value > YAWN_THRESHOLD:
-                cv2.putText(frame, "Yawn Alert", (10, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                if not alarm_active2 and not speaking:
-                    alarm_active2 = True
-                    alarm_thread = Thread(target=sound_alarm, args=('Take some fresh air, please!',))
-                    alarm_thread.daemon = True
-                    alarm_thread.start()
-        else:
-            alarm_active2 = False
+	else:
+    		FRAME_COUNTER = 0  # Reset the frame counter if eye aspect ratio is above the threshold
+   	        alarm_active = False  # Deactivate the alarm as the condition for drowsiness is not met
+
+
+        # Check if the calculated lip distance value exceeds the predefined yawn threshold
+if lip_distance_value > YAWN_THRESHOLD:
+    # Display a "Yawn Alert" message on the frame if a yawn is detected
+    cv2.putText(frame, "Yawn Alert", (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    
+    # Check conditions for triggering a fresh air alarm
+    if not alarm_active2 and not speaking:
+        # Activate the second alarm and start a thread to sound the alarm message
+        alarm_active2 = True
+        alarm_thread = Thread(target=sound_alarm, args=('Take some fresh air, please!',))
+        alarm_thread.daemon = True
+        alarm_thread.start()
+else:
+    alarm_active2 = False  # Deactivate the second alarm if yawn condition is not met
+
 
 # Display eye aspect ratio and lip distance values on the frame
         cv2.putText(frame, "EAR: {:.2f}".format(eye_aspect_ratio), (300, 30),
