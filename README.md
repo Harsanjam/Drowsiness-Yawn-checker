@@ -1,7 +1,9 @@
 # Drowsiness-Yawn-checker
 
 Simple code in python to detect Drowsiness and Yawn and alert the user using Dlib.
-This is the source code for the Facial Drowsiness and Yawn Detection software for the CPS 843 project. The following tutorial was used to construct this code: https://youtu.be/ksi42rwGyas?si=ql8kzDZ4QWgokIYB
+
+This is the source code for the Facial Drowsiness and Yawn Detection software for the CPS 843 project. 
+The following tutorial was used to construct this code: https://youtu.be/ksi42rwGyas?si=ql8kzDZ4QWgokIYB
 
 ## Dependencies
 
@@ -39,8 +41,6 @@ YAWN_THRESH = 15`	//change this according to the distance from the camera
 
 * https://www.pyimagesearch.com/
 
-* https://www.sciencedirect.com/science/article/pii/S2468227623004611![image](https://github.com/Harsanjam/Drowsiness-Yawn-checker/assets/56749102/4c644932-30fd-47f8-9ef8-f5e8a7401f0c)
-
-
+* https://www.sciencedirect.com/science/article/pii/S2468227623004611
 
 
